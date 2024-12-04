@@ -26,7 +26,6 @@
             label1 = new Label();
             registryList = new ListBox();
             RemoveSelectedMenusButton = new Button();
-            RemoveAllMenusButton = new Button();
             groupBox1 = new GroupBox();
             label3 = new Label();
             LastSecondsText = new TextBox();
@@ -51,6 +50,7 @@
             registryList.ItemHeight = 15;
             registryList.Location = new Point(12, 89);
             registryList.Name = "registryList";
+            registryList.SelectionMode = SelectionMode.MultiExtended;
             registryList.Size = new Size(345, 289);
             registryList.TabIndex = 1;
             // 
@@ -59,22 +59,11 @@
             RemoveSelectedMenusButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             RemoveSelectedMenusButton.Location = new Point(12, 384);
             RemoveSelectedMenusButton.Name = "RemoveSelectedMenusButton";
-            RemoveSelectedMenusButton.Size = new Size(83, 33);
+            RemoveSelectedMenusButton.Size = new Size(345, 33);
             RemoveSelectedMenusButton.TabIndex = 3;
-            RemoveSelectedMenusButton.Text = "Remove";
+            RemoveSelectedMenusButton.Text = "Remove Selected";
             RemoveSelectedMenusButton.UseVisualStyleBackColor = true;
             RemoveSelectedMenusButton.Click += RemoveSelectedMenusButton_Click;
-            // 
-            // RemoveAllMenusButton
-            // 
-            RemoveAllMenusButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            RemoveAllMenusButton.Location = new Point(101, 384);
-            RemoveAllMenusButton.Name = "RemoveAllMenusButton";
-            RemoveAllMenusButton.Size = new Size(125, 33);
-            RemoveAllMenusButton.TabIndex = 4;
-            RemoveAllMenusButton.Text = "Remove ALL";
-            RemoveAllMenusButton.UseVisualStyleBackColor = true;
-            RemoveAllMenusButton.Click += RemoveAllMenusButton_Click;
             // 
             // groupBox1
             // 
@@ -131,10 +120,10 @@
             ClientSize = new Size(370, 429);
             Controls.Add(AddToMenuButton);
             Controls.Add(groupBox1);
-            Controls.Add(RemoveAllMenusButton);
             Controls.Add(RemoveSelectedMenusButton);
             Controls.Add(registryList);
             Controls.Add(label1);
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Name = "RegistryManagerForm";
             Text = "Registry Management";
             Load += Form2_Load;
@@ -149,7 +138,6 @@
         private Label label1;
         private ListBox registryList;
         private Button RemoveSelectedMenusButton;
-        private Button RemoveAllMenusButton;
         private GroupBox groupBox1;
         private Label label2;
         private TextBox LastSecondsText;

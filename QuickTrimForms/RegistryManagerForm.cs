@@ -70,7 +70,13 @@ namespace QuickTrimForms {
         }
 
         private void RemoveAllMenusButton_Click(object sender, EventArgs e) {
-            string[] subKeys = Registry.ClassesRoot.GetSubKeyNames();
+            RegistryKey mainKey = Registry.ClassesRoot.OpenSubKey("*\\shell") ?? throw new Exception("Subkey does not exist!");
+
+            if (mainKey == null) {
+                throw new NullReferenceException("Shell Subkey does not exist!");
+            }
+
+            string[] subKeys = mainKey.GetSubKeyNames();
             foreach (string key in subKeys) {
                 if (key.Contains("QuickTrim")) {
                     Registry.ClassesRoot.DeleteSubKeyTree(key);
