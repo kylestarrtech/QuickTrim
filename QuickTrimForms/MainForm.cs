@@ -1,6 +1,8 @@
 using System.Reflection.Metadata;
 using System.Security.Principal;
+using System.Text.Json;
 using FFMpegCore;
+using FFMpegCore.Enums;
 using Microsoft.Win32;
 
 namespace QuickTrimForms
@@ -8,6 +10,8 @@ namespace QuickTrimForms
     public partial class MainForm : Form {
 
         public string SelectedVideoPath = string.Empty;
+        int ConstantRateFactor = 30;
+        bool SeenCRFWarning = false;
 
         public bool IsAdmin {
             get {
@@ -105,15 +109,98 @@ namespace QuickTrimForms
 
             string outputPath = filePath + Path.DirectorySeparatorChar + fileName + fileNameSuffix + extension;
 
-            FFMpeg.SubVideo(
-                videoPath,
-                outputPath,
-                TimeSpan.FromSeconds(startTime),
-                TimeSpan.FromSeconds(endTime)
-                );
+            //FFMpeg.SubVideo(
+            //    videoPath,
+            //    outputPath,
+            //    TimeSpan.FromSeconds(startTime),
+            //    TimeSpan.FromSeconds(endTime)
+            //    );
+
+            int duration = endTime - startTime;
+
+            FFMpegArguments
+                .FromFileInput(videoPath)
+                .OutputToFile(outputPath, true, options => options
+                    .WithVideoCodec(VideoCodec.LibX264)         // Sets the video codec
+                    .WithFramerate(60)                          // Sets framerate
+                    .WithCustomArgument("-vsync cfr")           // Ensures the framerate is constant, not variable.
+                    .WithConstantRateFactor(ConstantRateFactor) // Sets quality, assists in reducing file size
+                    .WithCustomArgument("-ss " + startTime)     // Sets the start time
+                    .WithCustomArgument("-t " + duration)       // Sets the duration
+                    .WithFastStart())                           // Allows the video to be played before it is fully downloaded.
+                .ProcessSynchronously();
+        }
+
+        public void InitializeSettings() {
+            string startupPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\QuickTrim";
+            string settingsPath = $"{startupPath}\\settings.json";
+
+            if (!Directory.Exists(startupPath)) {
+                Directory.CreateDirectory(startupPath);
+            }
+
+            if (!File.Exists(settingsPath)) {
+                QuickTrimSettings settings = new QuickTrimSettings();
+                settings.ConstantRateFactor = 30;
+                ConstantRateFactor = 30;
+
+                string json = JsonSerializer.Serialize(settings);
+
+                File.WriteAllText(settingsPath, json);
+            }
+
+            QuickTrimSettings? curSettings = GetSettings();
+
+            if (curSettings == null) {
+                throw new NullReferenceException("Settings don't exist upon initialization! This should be impossible unless the settings file was deleted during program launch!");
+            }
+
+            ConstantRateFactor = curSettings.ConstantRateFactor;
+
+            LoadSettingsUI(curSettings);
+        }
+
+        public QuickTrimSettings? GetSettings() {
+            string startupPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\QuickTrim";
+            string settingsPath = $"{startupPath}\\settings.json";
+
+            if (!File.Exists(settingsPath)) {
+                InitializeSettings();
+                return null;
+            }
+
+            string settingsJson = File.ReadAllText(settingsPath);
+            QuickTrimSettings settingsObject = JsonSerializer.Deserialize<QuickTrimSettings>(settingsJson) ?? throw new NullReferenceException("Settings cannot be deserialized properly!");
+
+            return settingsObject;
+        }
+
+        public void SaveSettings(QuickTrimSettings settings) {
+            if (settings == null) {
+                throw new NullReferenceException("Settings cannot be null!");
+            }
+
+            string startupPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\QuickTrim";
+            string settingsPath = $"{startupPath}\\settings.json";
+
+            if (!File.Exists(settingsPath)) {
+                throw new FileNotFoundException("Settings file does not exist!");
+            }
+
+            string json = JsonSerializer.Serialize(settings);
+
+            File.WriteAllText(settingsPath, json);
+        }
+
+        public void LoadSettingsUI(QuickTrimSettings settings) {
+            CRFLabel.Text = $"Constant Rate Factor: {settings.ConstantRateFactor}";
+
+            CRFBar.Value = settings.ConstantRateFactor;
         }
 
         private void Form1_Load(object sender, EventArgs e) {
+            InitializeSettings();
+
             string startupPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\QuickTrim";
             string fileName = "StartupLog.txt";
 
@@ -267,6 +354,34 @@ namespace QuickTrimForms
 
             RegistryManagerForm registryManagerForm = new RegistryManagerForm();
             registryManagerForm.Show();
+        }
+
+        private void CRFLabel_Click(object sender, EventArgs e) {
+
+        }
+
+        private void CRFBar_Scroll(object sender, EventArgs e) {
+
+            if (CRFBar.Value < 17 && !SeenCRFWarning) {
+                DialogResult result = MessageBox.Show(
+                    "Setting the Constant Rate Factor below this threshold may result in an increase in file size, most notably for videos that have already underwent compression (most videos).\n\nYou will not see this message again while QuickTrim is running.",
+                    "Warning: CRF Safe Zone",
+                    MessageBoxButtons.OK);
+
+                SeenCRFWarning = true;
+            }
+
+            ConstantRateFactor = CRFBar.Value;
+
+            CRFLabel.Text = $"Constant Rate Factor: {ConstantRateFactor}";
+        }
+
+        private void CRFBar_MouseUp(object sender, MouseEventArgs e) {
+            QuickTrimSettings settings = GetSettings() ?? throw new NullReferenceException("Settings cannot be loaded!");
+
+            settings.ConstantRateFactor = ConstantRateFactor;
+
+            SaveSettings(settings);
         }
     }
 }

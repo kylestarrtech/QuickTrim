@@ -42,8 +42,13 @@
             label4 = new Label();
             label3 = new Label();
             OpenRightClickMenu = new Button();
+            CRFBar = new TrackBar();
+            CRFLabel = new Label();
+            label6 = new Label();
+            label7 = new Label();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)CRFBar).BeginInit();
             SuspendLayout();
             // 
             // VideoFile
@@ -65,7 +70,7 @@
             // 
             SelectVideo.Location = new Point(12, 31);
             SelectVideo.Name = "SelectVideo";
-            SelectVideo.Size = new Size(130, 21);
+            SelectVideo.Size = new Size(130, 23);
             SelectVideo.TabIndex = 1;
             SelectVideo.Text = "Choose Video...";
             SelectVideo.UseVisualStyleBackColor = true;
@@ -179,7 +184,7 @@
             // 
             // OpenRightClickMenu
             // 
-            OpenRightClickMenu.Location = new Point(18, 212);
+            OpenRightClickMenu.Location = new Point(374, 31);
             OpenRightClickMenu.Name = "OpenRightClickMenu";
             OpenRightClickMenu.Size = new Size(224, 23);
             OpenRightClickMenu.TabIndex = 14;
@@ -187,12 +192,59 @@
             OpenRightClickMenu.UseVisualStyleBackColor = true;
             OpenRightClickMenu.Click += OpenRightClickMenu_Click;
             // 
+            // CRFBar
+            // 
+            CRFBar.AutoSize = false;
+            CRFBar.Location = new Point(92, 209);
+            CRFBar.Maximum = 48;
+            CRFBar.Minimum = 4;
+            CRFBar.Name = "CRFBar";
+            CRFBar.Size = new Size(426, 26);
+            CRFBar.TabIndex = 15;
+            CRFBar.Value = 4;
+            CRFBar.Scroll += CRFBar_Scroll;
+            CRFBar.MouseUp += CRFBar_MouseUp;
+            // 
+            // CRFLabel
+            // 
+            CRFLabel.Location = new Point(92, 182);
+            CRFLabel.Name = "CRFLabel";
+            CRFLabel.Size = new Size(426, 19);
+            CRFLabel.TabIndex = 16;
+            CRFLabel.Text = "Constant Rate Factor (CRF): 0";
+            CRFLabel.TextAlign = ContentAlignment.MiddleCenter;
+            CRFLabel.Click += CRFLabel_Click;
+            // 
+            // label6
+            // 
+            label6.Font = new Font("Segoe UI", 7F, FontStyle.Bold);
+            label6.Location = new Point(12, 209);
+            label6.Name = "label6";
+            label6.Size = new Size(74, 29);
+            label6.TabIndex = 17;
+            label6.Text = "Lossless (Not Recommended)";
+            label6.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label7
+            // 
+            label7.Font = new Font("Segoe UI", 7F, FontStyle.Bold);
+            label7.Location = new Point(524, 209);
+            label7.Name = "label7";
+            label7.Size = new Size(74, 29);
+            label7.TabIndex = 18;
+            label7.Text = "High Compression";
+            label7.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // MainForm
             // 
             AllowDrop = true;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(605, 247);
+            Controls.Add(label7);
+            Controls.Add(label6);
+            Controls.Add(CRFLabel);
+            Controls.Add(CRFBar);
             Controls.Add(OpenRightClickMenu);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
@@ -209,6 +261,7 @@
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)CRFBar).EndInit();
             ResumeLayout(false);
         }
 
@@ -229,5 +282,9 @@
         private Label label4;
         private Label label3;
         private Button OpenRightClickMenu;
+        private TrackBar CRFBar;
+        private Label CRFLabel;
+        private Label label6;
+        private Label label7;
     }
 }
