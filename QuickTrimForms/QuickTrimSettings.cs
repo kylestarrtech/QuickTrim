@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFMpegCore.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,6 @@ namespace QuickTrimForms {
     public class QuickTrimSettings {
         public int ConstantRateFactor { get; set; }
         public QuickTrimCPUUsage CPUUsage { get; set; }
+        public Speed EncoderPreset { get; set; }
     }
 }

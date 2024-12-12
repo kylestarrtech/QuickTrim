@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFMpegCore.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +45,8 @@ namespace QuickTrimForms {
 
             QuickTrimSettings settings = new QuickTrimSettings();
             settings.ConstantRateFactor = 30;
+            settings.CPUUsage = QuickTrimCPUUsage.Default;
+            settings.EncoderPreset = Speed.Medium;
 
             string json = JsonSerializer.Serialize(settings);
 

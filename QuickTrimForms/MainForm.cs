@@ -116,8 +116,6 @@ namespace QuickTrimForms
             double framerate = FFProbe.Analyse(videoPath).VideoStreams.First().FrameRate;
             int newFramerate = AvailableFramerates.FindClosestFPS(framerate);
 
-            MessageBox.Show($"Threads: {settings.CPUUsage} = {(int)settings.CPUUsage}");
-
             FFMpegArguments
                 .FromFileInput(videoPath)
                 .OutputToFile(outputPath, true, options => options
@@ -128,7 +126,9 @@ namespace QuickTrimForms
                     .WithCustomArgument("-ss " + startTime)                         // Sets the start time
                     .WithCustomArgument("-t " + duration)                           // Sets the duration
                     .WithCustomArgument($"-threads {(int)settings.CPUUsage}")       // Sets the number of threads to 1
-                    .WithFastStart())                                               // Allows the video to be played before it is fully downloaded.
+                    .WithSpeedPreset(settings.EncoderPreset)                        // Sets the encoding speed
+                    .WithFastStart()                                                // Allows the video to be played before it is fully downloaded.
+                    )                                               
                 .ProcessSynchronously();
 
 

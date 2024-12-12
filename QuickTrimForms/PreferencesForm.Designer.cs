@@ -26,6 +26,9 @@
             cpuUsageType = new ComboBox();
             label1 = new Label();
             CPUUsageInfoBox = new TextBox();
+            textBox2 = new TextBox();
+            label2 = new Label();
+            EncoderPresetBox = new ComboBox();
             SuspendLayout();
             // 
             // cpuUsageType
@@ -47,22 +50,55 @@
             // 
             // CPUUsageInfoBox
             // 
-            CPUUsageInfoBox.BorderStyle = BorderStyle.None;
+            CPUUsageInfoBox.BorderStyle = BorderStyle.FixedSingle;
+            CPUUsageInfoBox.Font = new Font("Segoe UI", 7F);
             CPUUsageInfoBox.Location = new Point(12, 56);
             CPUUsageInfoBox.Multiline = true;
             CPUUsageInfoBox.Name = "CPUUsageInfoBox";
             CPUUsageInfoBox.ReadOnly = true;
-            CPUUsageInfoBox.Size = new Size(273, 129);
+            CPUUsageInfoBox.Size = new Size(273, 80);
             CPUUsageInfoBox.TabIndex = 2;
             CPUUsageInfoBox.Text = "Controls how many threads FFmpeg will have access to during encoding. This can greatly affect how quickly a video is processed.\r\n\r\nDefault = Automatic\r\nSlower = 1 thread.\r\nSlow = 4 threads.";
-            CPUUsageInfoBox.TextChanged += textBox1_TextChanged;
-            CPUUsageInfoBox.Enter += CPUUsageInfoBox_Enter;
+            CPUUsageInfoBox.Enter += UnfocusControl;
+            // 
+            // textBox2
+            // 
+            textBox2.BorderStyle = BorderStyle.FixedSingle;
+            textBox2.Font = new Font("Segoe UI", 7F);
+            textBox2.Location = new Point(12, 186);
+            textBox2.Multiline = true;
+            textBox2.Name = "textBox2";
+            textBox2.ReadOnly = true;
+            textBox2.Size = new Size(273, 31);
+            textBox2.TabIndex = 7;
+            textBox2.Text = "A set of options that will compromise between encoding speed and compression ratio.";
+            textBox2.Enter += UnfocusControl;
+            // 
+            // label2
+            // 
+            label2.Location = new Point(12, 139);
+            label2.Name = "label2";
+            label2.Size = new Size(273, 15);
+            label2.TabIndex = 6;
+            label2.Text = "Encoder Preset:";
+            // 
+            // EncoderPresetBox
+            // 
+            EncoderPresetBox.FormattingEnabled = true;
+            EncoderPresetBox.Location = new Point(12, 157);
+            EncoderPresetBox.Name = "EncoderPresetBox";
+            EncoderPresetBox.Size = new Size(273, 23);
+            EncoderPresetBox.TabIndex = 5;
+            EncoderPresetBox.SelectedIndexChanged += EncoderPresetBox_SelectedIndexChanged;
             // 
             // PreferencesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(297, 197);
+            ClientSize = new Size(297, 226);
+            Controls.Add(textBox2);
+            Controls.Add(label2);
+            Controls.Add(EncoderPresetBox);
             Controls.Add(CPUUsageInfoBox);
             Controls.Add(label1);
             Controls.Add(cpuUsageType);
@@ -79,5 +115,8 @@
         private ComboBox cpuUsageType;
         private Label label1;
         private TextBox CPUUsageInfoBox;
+        private TextBox textBox2;
+        private Label label2;
+        private ComboBox EncoderPresetBox;
     }
 }

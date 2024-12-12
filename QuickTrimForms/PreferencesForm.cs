@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFMpegCore.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -34,10 +35,6 @@ namespace QuickTrimForms {
             }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e) {
-
-        }
-
         private void PreferencesForm_Load(object sender, EventArgs e) {
             QuickTrimSettings settings;
 
@@ -60,10 +57,41 @@ namespace QuickTrimForms {
                     break;
                 }
             }
+
+            // Create elements in the combobox EncoderPresetBox to match the enum
+            EncoderPresetBox.DataSource = Enum.GetValues(typeof(Speed));
+
+            // Set the selected value to the current value in the settings
+            foreach (Speed item in EncoderPresetBox.Items) {
+                if (item == settings.EncoderPreset) {
+                    EncoderPresetBox.SelectedItem = item;
+                    break;
+                }
+            }
         }
 
-        private void CPUUsageInfoBox_Enter(object sender, EventArgs e) {
+        private void UnfocusControl(object sender, EventArgs e) {
             this.ActiveControl = null;
+        }
+
+        private void EncoderPresetBox_SelectedIndexChanged(object sender, EventArgs e) {
+            QuickTrimSettings settings;
+            try {
+                settings = SettingsUtility.GetSettings() ?? throw new NullReferenceException("Settings cannot be loaded!");
+            }
+            catch (NullReferenceException ex) {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+                return;
+            }
+
+            settings.EncoderPreset = (Speed)EncoderPresetBox.SelectedValue;
+            try {
+                SettingsUtility.SaveSettings(settings);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
