@@ -2,6 +2,7 @@ using System.Reflection.Metadata;
 using System.Security.Principal;
 using System.Text.Json;
 using FFMpegCore;
+using FFMpegCore.Arguments;
 using FFMpegCore.Enums;
 using Microsoft.Win32;
 
@@ -10,8 +11,9 @@ namespace QuickTrimForms
     public partial class MainForm : Form {
 
         public string SelectedVideoPath = string.Empty;
-        int ConstantRateFactor = 30;
         bool SeenCRFWarning = false;
+
+        QuickTrimSettings settings;
 
         public bool IsAdmin {
             get {
@@ -114,81 +116,37 @@ namespace QuickTrimForms
             double framerate = FFProbe.Analyse(videoPath).VideoStreams.First().FrameRate;
             int newFramerate = AvailableFramerates.FindClosestFPS(framerate);
 
+            MessageBox.Show($"Threads: {settings.CPUUsage} = {(int)settings.CPUUsage}");
+
             FFMpegArguments
                 .FromFileInput(videoPath)
                 .OutputToFile(outputPath, true, options => options
-                    .WithVideoCodec(VideoCodec.LibX264)         // Sets the video codec
-                    .WithFramerate(newFramerate)                // Sets framerate
-                    .WithCustomArgument("-vsync cfr")           // Ensures the framerate is constant, not variable.
-                    .WithConstantRateFactor(ConstantRateFactor) // Sets quality, assists in reducing file size
-                    .WithCustomArgument("-ss " + startTime)     // Sets the start time
-                    .WithCustomArgument("-t " + duration)       // Sets the duration
-                    .WithFastStart())                           // Allows the video to be played before it is fully downloaded.
+                    .WithVideoCodec(VideoCodec.LibX264)                             // Sets the video codec
+                    .WithFramerate(newFramerate)                                    // Sets framerate
+                    .WithCustomArgument("-vsync cfr")                               // Ensures the framerate is constant, not variable.
+                    .WithConstantRateFactor(settings.ConstantRateFactor)            // Sets quality, assists in reducing file size
+                    .WithCustomArgument("-ss " + startTime)                         // Sets the start time
+                    .WithCustomArgument("-t " + duration)                           // Sets the duration
+                    .WithCustomArgument($"-threads {(int)settings.CPUUsage}")       // Sets the number of threads to 1
+                    .WithFastStart())                                               // Allows the video to be played before it is fully downloaded.
                 .ProcessSynchronously();
+
+
         }
 
         public void InitializeSettings() {
-            string startupPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\QuickTrim";
-            string settingsPath = $"{startupPath}\\settings.json";
-
-            if (!Directory.Exists(startupPath)) {
-                Directory.CreateDirectory(startupPath);
-            }
-
-            if (!File.Exists(settingsPath)) {
-                QuickTrimSettings settings = new QuickTrimSettings();
-                settings.ConstantRateFactor = 30;
-                ConstantRateFactor = 30;
-
-                string json = JsonSerializer.Serialize(settings);
-
-                File.WriteAllText(settingsPath, json);
-            }
-
-            QuickTrimSettings? curSettings = GetSettings();
+            QuickTrimSettings curSettings = SettingsUtility.GetSettings() ?? throw new NullReferenceException("Settings cannot be loaded!");
 
             if (curSettings == null) {
                 throw new NullReferenceException("Settings don't exist upon initialization! This should be impossible unless the settings file was deleted during program launch!");
             }
 
-            ConstantRateFactor = curSettings.ConstantRateFactor;
+            settings = curSettings;
 
-            LoadSettingsUI(curSettings);
+            LoadSettingsUI();
         }
 
-        public QuickTrimSettings? GetSettings() {
-            string startupPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\QuickTrim";
-            string settingsPath = $"{startupPath}\\settings.json";
-
-            if (!File.Exists(settingsPath)) {
-                InitializeSettings();
-                return null;
-            }
-
-            string settingsJson = File.ReadAllText(settingsPath);
-            QuickTrimSettings settingsObject = JsonSerializer.Deserialize<QuickTrimSettings>(settingsJson) ?? throw new NullReferenceException("Settings cannot be deserialized properly!");
-
-            return settingsObject;
-        }
-
-        public void SaveSettings(QuickTrimSettings settings) {
-            if (settings == null) {
-                throw new NullReferenceException("Settings cannot be null!");
-            }
-
-            string startupPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\QuickTrim";
-            string settingsPath = $"{startupPath}\\settings.json";
-
-            if (!File.Exists(settingsPath)) {
-                throw new FileNotFoundException("Settings file does not exist!");
-            }
-
-            string json = JsonSerializer.Serialize(settings);
-
-            File.WriteAllText(settingsPath, json);
-        }
-
-        public void LoadSettingsUI(QuickTrimSettings settings) {
+        public void LoadSettingsUI() {
             CRFLabel.Text = $"Constant Rate Factor: {settings.ConstantRateFactor}";
 
             CRFBar.Value = settings.ConstantRateFactor;
@@ -349,7 +307,32 @@ namespace QuickTrimForms
             }
 
             RegistryManagerForm registryManagerForm = new RegistryManagerForm();
+            
             registryManagerForm.Show();
+            registryManagerForm.Location = this.Location;
+            this.Hide();
+
+
+            registryManagerForm.FormClosed += (s, args) => {
+                this.Location = registryManagerForm.Location;
+                this.Show();
+            };
+        }
+        private void preferencesButton_Click(object sender, EventArgs e) {
+            PreferencesForm prefForm = new PreferencesForm();
+            
+            prefForm.Show();
+            prefForm.Location = this.Location;
+            this.Hide();
+
+
+            prefForm.FormClosed += (s, args) => {
+                settings = SettingsUtility.GetSettings() ?? throw new NullReferenceException("Settings cannot be loaded!");
+                
+                this.Location = prefForm.Location;
+                this.Show();
+
+            };
         }
 
         private void CRFLabel_Click(object sender, EventArgs e) {
@@ -367,17 +350,17 @@ namespace QuickTrimForms
                 SeenCRFWarning = true;
             }
 
-            ConstantRateFactor = CRFBar.Value;
-
-            CRFLabel.Text = $"Constant Rate Factor: {ConstantRateFactor}";
+            CRFLabel.Text = $"Constant Rate Factor: {CRFBar.Value}*";
         }
 
         private void CRFBar_MouseUp(object sender, MouseEventArgs e) {
-            QuickTrimSettings settings = GetSettings() ?? throw new NullReferenceException("Settings cannot be loaded!");
+            QuickTrimSettings settings = SettingsUtility.GetSettings() ?? throw new NullReferenceException("Settings cannot be loaded!");
 
-            settings.ConstantRateFactor = ConstantRateFactor;
+            settings.ConstantRateFactor = CRFBar.Value;
+            CRFLabel.Text = $"Constant Rate Factor: {CRFBar.Value}";
 
-            SaveSettings(settings);
+
+            SettingsUtility.SaveSettings(settings);
         }
     }
 }

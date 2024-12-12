@@ -46,6 +46,8 @@
             CRFLabel = new Label();
             label6 = new Label();
             label7 = new Label();
+            preferencesButton = new Button();
+            panel1 = new Panel();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)CRFBar).BeginInit();
@@ -101,6 +103,7 @@
             // 
             // SaveButton
             // 
+            SaveButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             SaveButton.Location = new Point(507, 21);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(73, 21);
@@ -111,6 +114,7 @@
             // 
             // SaveLastSecondsButton
             // 
+            SaveLastSecondsButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             SaveLastSecondsButton.Location = new Point(507, 19);
             SaveLastSecondsButton.Name = "SaveLastSecondsButton";
             SaveLastSecondsButton.Size = new Size(73, 23);
@@ -143,6 +147,8 @@
             groupBox1.Controls.Add(label2);
             groupBox1.Controls.Add(TrimEnd);
             groupBox1.Controls.Add(SaveButton);
+            groupBox1.FlatStyle = FlatStyle.System;
+            groupBox1.ForeColor = SystemColors.ControlText;
             groupBox1.Location = new Point(12, 58);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(586, 54);
@@ -201,12 +207,13 @@
             CRFBar.Name = "CRFBar";
             CRFBar.Size = new Size(426, 26);
             CRFBar.TabIndex = 15;
-            CRFBar.Value = 4;
+            CRFBar.Value = 17;
             CRFBar.Scroll += CRFBar_Scroll;
             CRFBar.MouseUp += CRFBar_MouseUp;
             // 
             // CRFLabel
             // 
+            CRFLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             CRFLabel.Location = new Point(92, 182);
             CRFLabel.Name = "CRFLabel";
             CRFLabel.Size = new Size(426, 19);
@@ -235,12 +242,32 @@
             label7.Text = "High Compression";
             label7.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // preferencesButton
+            // 
+            preferencesButton.Location = new Point(238, 31);
+            preferencesButton.Name = "preferencesButton";
+            preferencesButton.Size = new Size(130, 23);
+            preferencesButton.TabIndex = 19;
+            preferencesButton.Text = "Preferences";
+            preferencesButton.UseVisualStyleBackColor = true;
+            preferencesButton.Click += preferencesButton_Click;
+            // 
+            // panel1
+            // 
+            panel1.BackColor = Color.Red;
+            panel1.ForeColor = SystemColors.ControlText;
+            panel1.Location = new Point(100, 237);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(123, 5);
+            panel1.TabIndex = 20;
+            // 
             // MainForm
             // 
             AllowDrop = true;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(605, 247);
+            Controls.Add(preferencesButton);
             Controls.Add(label7);
             Controls.Add(label6);
             Controls.Add(CRFLabel);
@@ -250,6 +277,7 @@
             Controls.Add(groupBox1);
             Controls.Add(SelectVideo);
             Controls.Add(VideoPath);
+            Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Name = "MainForm";
             Text = "QuickTrim";
@@ -286,5 +314,7 @@
         private Label CRFLabel;
         private Label label6;
         private Label label7;
+        private Button preferencesButton;
+        private Panel panel1;
     }
 }
