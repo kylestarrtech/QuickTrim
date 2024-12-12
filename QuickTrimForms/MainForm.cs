@@ -109,20 +109,16 @@ namespace QuickTrimForms
 
             string outputPath = filePath + Path.DirectorySeparatorChar + fileName + fileNameSuffix + extension;
 
-            //FFMpeg.SubVideo(
-            //    videoPath,
-            //    outputPath,
-            //    TimeSpan.FromSeconds(startTime),
-            //    TimeSpan.FromSeconds(endTime)
-            //    );
-
             int duration = endTime - startTime;
+
+            double framerate = FFProbe.Analyse(videoPath).VideoStreams.First().FrameRate;
+            int newFramerate = AvailableFramerates.FindClosestFPS(framerate);
 
             FFMpegArguments
                 .FromFileInput(videoPath)
                 .OutputToFile(outputPath, true, options => options
                     .WithVideoCodec(VideoCodec.LibX264)         // Sets the video codec
-                    .WithFramerate(60)                          // Sets framerate
+                    .WithFramerate(newFramerate)                // Sets framerate
                     .WithCustomArgument("-vsync cfr")           // Ensures the framerate is constant, not variable.
                     .WithConstantRateFactor(ConstantRateFactor) // Sets quality, assists in reducing file size
                     .WithCustomArgument("-ss " + startTime)     // Sets the start time
