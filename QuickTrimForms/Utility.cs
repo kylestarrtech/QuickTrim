@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 namespace QuickTrimForms {
     public static class Utility {
         public static bool IsNumber(string str) {
-            int val;
-            bool isInt = int.TryParse(str, out val);
+            double val;
+            bool isNum = double.TryParse(str, out val);
 
-            if (!isInt) { return isInt; }
+            if (!isNum) { return isNum; }
 
-            return isInt;
+            return isNum;
         }
 
-        public static int GetNumber(string str) {
+        public static double GetNumber(string str) {
             if (!IsNumber(str)) {
-                return -int.MaxValue;
+                return -double.MaxValue;
             }
 
-            return int.Parse(str);
+            return double.Parse(str);
         }
 
         public static long GetCurrentEpoch() {

@@ -63,7 +63,7 @@ namespace QuickTrimForms
         }
 
         public void SaveLastSeconds(string videoPath, string seconds) {
-            int start, end;
+            double start, end;
 
             if (videoPath == string.Empty) {
                 return;
@@ -82,14 +82,14 @@ namespace QuickTrimForms
             var videoInfo = FFProbe.Analyse(videoPath);
 
             start = (int)videoInfo.Duration.TotalSeconds - int.Parse(seconds);
-            end = (int)videoInfo.Duration.TotalSeconds;
+            end = videoInfo.Duration.TotalSeconds;
 
             TrimVideo(videoPath, start.ToString(), end.ToString());
         }
 
         public void TrimVideo(string videoPath, string start, string end) {
 
-            int startTime, endTime;
+            double startTime, endTime;
 
             startTime = Utility.GetNumber(start);
             endTime = Utility.GetNumber(end);
@@ -99,7 +99,7 @@ namespace QuickTrimForms
             }
 
             if (startTime == -int.MaxValue || endTime == -int.MaxValue) {
-                throw new TimeInputInvalidException("Input values are not able to be converted to integers.");
+                throw new TimeInputInvalidException("Input values are not able to be converted to numbers.");
             }
 
             string filePath = Path.GetDirectoryName(videoPath) ?? throw new Exception("Directory does not exist!");
@@ -111,7 +111,7 @@ namespace QuickTrimForms
 
             string outputPath = filePath + Path.DirectorySeparatorChar + fileName + fileNameSuffix + extension;
 
-            int duration = endTime - startTime;
+            double duration = endTime - startTime;
 
             double framerate = FFProbe.Analyse(videoPath).VideoStreams.First().FrameRate;
             int newFramerate = AvailableFramerates.FindClosestFPS(framerate);
