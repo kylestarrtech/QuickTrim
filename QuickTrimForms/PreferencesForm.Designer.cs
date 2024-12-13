@@ -29,6 +29,12 @@
             textBox2 = new TextBox();
             label2 = new Label();
             EncoderPresetBox = new ComboBox();
+            setFramerateInfoBox = new TextBox();
+            setFramerateLabel = new Label();
+            SetSpecificFramerateBox = new CheckBox();
+            SetFramerateNum = new NumericUpDown();
+            placeboSetButton = new Button();
+            ((System.ComponentModel.ISupportInitialize)SetFramerateNum).BeginInit();
             SuspendLayout();
             // 
             // cpuUsageType
@@ -65,7 +71,7 @@
             // 
             textBox2.BorderStyle = BorderStyle.FixedSingle;
             textBox2.Font = new Font("Segoe UI", 7F);
-            textBox2.Location = new Point(12, 186);
+            textBox2.Location = new Point(12, 189);
             textBox2.Multiline = true;
             textBox2.Name = "textBox2";
             textBox2.ReadOnly = true;
@@ -76,7 +82,7 @@
             // 
             // label2
             // 
-            label2.Location = new Point(12, 139);
+            label2.Location = new Point(12, 142);
             label2.Name = "label2";
             label2.Size = new Size(273, 15);
             label2.TabIndex = 6;
@@ -85,17 +91,74 @@
             // EncoderPresetBox
             // 
             EncoderPresetBox.FormattingEnabled = true;
-            EncoderPresetBox.Location = new Point(12, 157);
+            EncoderPresetBox.Location = new Point(12, 160);
             EncoderPresetBox.Name = "EncoderPresetBox";
             EncoderPresetBox.Size = new Size(273, 23);
             EncoderPresetBox.TabIndex = 5;
             EncoderPresetBox.SelectedIndexChanged += EncoderPresetBox_SelectedIndexChanged;
             // 
+            // setFramerateInfoBox
+            // 
+            setFramerateInfoBox.BorderStyle = BorderStyle.FixedSingle;
+            setFramerateInfoBox.Font = new Font("Segoe UI", 7F);
+            setFramerateInfoBox.Location = new Point(12, 298);
+            setFramerateInfoBox.Multiline = true;
+            setFramerateInfoBox.Name = "setFramerateInfoBox";
+            setFramerateInfoBox.ReadOnly = true;
+            setFramerateInfoBox.Size = new Size(273, 43);
+            setFramerateInfoBox.TabIndex = 10;
+            setFramerateInfoBox.Text = "If the \"Encode at set framerate?\" setting is ticked, videos will ALWAYS render at the specified framerate. Otherwise it's automatically rounded to the nearest available.";
+            // 
+            // setFramerateLabel
+            // 
+            setFramerateLabel.Location = new Point(12, 251);
+            setFramerateLabel.Name = "setFramerateLabel";
+            setFramerateLabel.Size = new Size(273, 15);
+            setFramerateLabel.TabIndex = 9;
+            setFramerateLabel.Text = "Set Framerate:";
+            // 
+            // SetSpecificFramerateBox
+            // 
+            SetSpecificFramerateBox.AutoSize = true;
+            SetSpecificFramerateBox.Location = new Point(12, 229);
+            SetSpecificFramerateBox.Name = "SetSpecificFramerateBox";
+            SetSpecificFramerateBox.Size = new Size(155, 19);
+            SetSpecificFramerateBox.TabIndex = 11;
+            SetSpecificFramerateBox.Text = "Encode at set framerate?";
+            SetSpecificFramerateBox.UseVisualStyleBackColor = true;
+            SetSpecificFramerateBox.CheckedChanged += SetSpecificFramerateBox_CheckedChanged;
+            // 
+            // SetFramerateNum
+            // 
+            SetFramerateNum.Increment = new decimal(new int[] { 15, 0, 0, 0 });
+            SetFramerateNum.Location = new Point(12, 269);
+            SetFramerateNum.Maximum = new decimal(new int[] { 480, 0, 0, 0 });
+            SetFramerateNum.Minimum = new decimal(new int[] { 24, 0, 0, 0 });
+            SetFramerateNum.Name = "SetFramerateNum";
+            SetFramerateNum.Size = new Size(192, 23);
+            SetFramerateNum.TabIndex = 12;
+            SetFramerateNum.Value = new decimal(new int[] { 24, 0, 0, 0 });
+            SetFramerateNum.ValueChanged += SetFramerateNum_ValueChanged;
+            // 
+            // placeboSetButton
+            // 
+            placeboSetButton.Location = new Point(210, 269);
+            placeboSetButton.Name = "placeboSetButton";
+            placeboSetButton.Size = new Size(75, 23);
+            placeboSetButton.TabIndex = 13;
+            placeboSetButton.Text = "Set";
+            placeboSetButton.UseVisualStyleBackColor = true;
+            // 
             // PreferencesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(297, 226);
+            ClientSize = new Size(297, 350);
+            Controls.Add(placeboSetButton);
+            Controls.Add(SetFramerateNum);
+            Controls.Add(SetSpecificFramerateBox);
+            Controls.Add(setFramerateInfoBox);
+            Controls.Add(setFramerateLabel);
             Controls.Add(textBox2);
             Controls.Add(label2);
             Controls.Add(EncoderPresetBox);
@@ -106,6 +169,7 @@
             Name = "PreferencesForm";
             Text = "Preferences";
             Load += PreferencesForm_Load;
+            ((System.ComponentModel.ISupportInitialize)SetFramerateNum).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -118,5 +182,10 @@
         private TextBox textBox2;
         private Label label2;
         private ComboBox EncoderPresetBox;
+        private TextBox setFramerateInfoBox;
+        private Label setFramerateLabel;
+        private CheckBox SetSpecificFramerateBox;
+        private NumericUpDown SetFramerateNum;
+        private Button placeboSetButton;
     }
 }

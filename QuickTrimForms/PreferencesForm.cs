@@ -68,6 +68,15 @@ namespace QuickTrimForms {
                     break;
                 }
             }
+
+            SetSpecificFramerateBox.Checked = settings.EncodeSpecificFramerate;
+
+            SetFramerateNum.Enabled = settings.EncodeSpecificFramerate;
+            placeboSetButton.Enabled = settings.EncodeSpecificFramerate;
+            setFramerateInfoBox.Enabled = settings.EncodeSpecificFramerate;
+            setFramerateLabel.Enabled = settings.EncodeSpecificFramerate;
+
+            SetFramerateNum.Value = Math.Clamp(settings.SetFrameRate, SetFramerateNum.Minimum, SetFramerateNum.Maximum);
         }
 
         private void UnfocusControl(object sender, EventArgs e) {
@@ -86,6 +95,55 @@ namespace QuickTrimForms {
             }
 
             settings.EncoderPreset = (Speed)EncoderPresetBox.SelectedValue;
+
+            try {
+                SettingsUtility.SaveSettings(settings);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SetSpecificFramerateBox_CheckedChanged(object sender, EventArgs e) {
+            QuickTrimSettings settings;
+            try {
+                settings = SettingsUtility.GetSettings() ?? throw new NullReferenceException("Settings cannot be loaded!");
+            }
+            catch (NullReferenceException ex) {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+                return;
+            }
+
+            settings.EncodeSpecificFramerate = SetSpecificFramerateBox.Checked;
+
+            SetFramerateNum.Enabled = settings.EncodeSpecificFramerate;
+            placeboSetButton.Enabled = settings.EncodeSpecificFramerate;
+            setFramerateInfoBox.Enabled = settings.EncodeSpecificFramerate;
+            setFramerateLabel.Enabled = settings.EncodeSpecificFramerate;
+
+
+            try {
+                SettingsUtility.SaveSettings(settings);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SetFramerateNum_ValueChanged(object sender, EventArgs e) {
+            QuickTrimSettings settings;
+            try {
+                settings = SettingsUtility.GetSettings() ?? throw new NullReferenceException("Settings cannot be loaded!");
+            }
+            catch (NullReferenceException ex) {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+                return;
+            }
+
+            settings.SetFrameRate = (int)SetFramerateNum.Value;
+
             try {
                 SettingsUtility.SaveSettings(settings);
             }

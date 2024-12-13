@@ -17,5 +17,7 @@ namespace QuickTrimForms {
         public int ConstantRateFactor { get; set; }
         public QuickTrimCPUUsage CPUUsage { get; set; }
         public Speed EncoderPreset { get; set; }
+        public bool EncodeSpecificFramerate { get; set; }
+        public int SetFrameRate { get; set; }
     }
 }

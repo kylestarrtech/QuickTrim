@@ -44,9 +44,12 @@ namespace QuickTrimForms {
             }
 
             QuickTrimSettings settings = new QuickTrimSettings();
+
             settings.ConstantRateFactor = 30;
             settings.CPUUsage = QuickTrimCPUUsage.Default;
             settings.EncoderPreset = Speed.Medium;
+            settings.EncodeSpecificFramerate = false;
+            settings.SetFrameRate = 60;
 
             string json = JsonSerializer.Serialize(settings);
 

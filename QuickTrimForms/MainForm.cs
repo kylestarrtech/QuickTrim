@@ -114,24 +114,31 @@ namespace QuickTrimForms
             double duration = endTime - startTime;
 
             double framerate = FFProbe.Analyse(videoPath).VideoStreams.First().FrameRate;
-            int newFramerate = AvailableFramerates.FindClosestFPS(framerate);
+            int closestFramerate = AvailableFramerates.FindClosestFPS(framerate);
 
-            FFMpegArguments
-                .FromFileInput(videoPath)
-                .OutputToFile(outputPath, true, options => options
-                    .WithVideoCodec(VideoCodec.LibX264)                             // Sets the video codec
-                    .WithFramerate(newFramerate)                                    // Sets framerate
+            var options = new Action<FFMpegArgumentOptions>(opts => {
+                opts.WithVideoCodec(VideoCodec.LibX264)                             // Sets the video codec
                     .WithCustomArgument("-vsync cfr")                               // Ensures the framerate is constant, not variable.
                     .WithConstantRateFactor(settings.ConstantRateFactor)            // Sets quality, assists in reducing file size
                     .WithCustomArgument("-ss " + startTime)                         // Sets the start time
                     .WithCustomArgument("-t " + duration)                           // Sets the duration
                     .WithCustomArgument($"-threads {(int)settings.CPUUsage}")       // Sets the number of threads to 1
                     .WithSpeedPreset(settings.EncoderPreset)                        // Sets the encoding speed
-                    .WithFastStart()                                                // Allows the video to be played before it is fully downloaded.
-                    )                                               
+                    .WithFastStart();                                               // Optimizes the video for Internet streaming by putting the headers at the beginning of the file.
+                
+                if (settings.EncodeSpecificFramerate) {
+                    opts.WithFramerate(settings.SetFrameRate);
+                } else {
+                    opts.WithFramerate(closestFramerate);
+                }
+            });
+
+            
+
+            FFMpegArguments
+                .FromFileInput(videoPath)
+                .OutputToFile(outputPath, true, options)
                 .ProcessSynchronously();
-
-
         }
 
         public void InitializeSettings() {
